@@ -13,10 +13,15 @@ class Transaction extends Model
     'date',
     'description',
     'wallet_id', // ⚠️ WAJIB ADA
+      'user_id',
 ];
 
     public function wallet()
 {
     return $this->belongsTo(Wallet::class);
+}
+public function user()
+{
+    return $this->belongsTo(User::class);
 }
 }

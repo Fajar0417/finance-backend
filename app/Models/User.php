@@ -16,7 +16,7 @@ use Laravel\Sanctum\HasApiTokens;
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-     use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * Get the attributes that should be cast.
@@ -30,6 +30,13 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function wallets()
+    {
+        return $this->hasMany(Wallet::class);
+    }
 
-    
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

@@ -11,11 +11,16 @@ protected $fillable = [
     'name',
     'type',
     'balance',
-    'account_number'
+    'account_number',
+       'user_id'
 ];
 
     public function transactions()
 {
     return $this->hasMany(Transaction::class);
+}
+public function user()
+{
+    return $this->belongsTo(User::class);
 }
 }
