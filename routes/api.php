@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\TransactionController;
 
@@ -39,4 +40,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/transactions', [TransactionController::class, 'store']);
     Route::put('/transactions/{id}', [TransactionController::class, 'update']);
     Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
+
+     Route::apiResource(
+        'budgets',
+        BudgetController::class
+    );
 });
