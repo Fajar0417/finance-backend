@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BudgetController;
 use App\Http\Controllers\WalletController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\GoalController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,4 +46,12 @@ Route::middleware('auth:sanctum')->group(function () {
         'budgets',
         BudgetController::class
     );
+
+    Route::get('/goals', [GoalController::class, 'index']);
+    Route::post('/goals', [GoalController::class, 'store']);
+    Route::delete('/goals/{id}', [GoalController::class, 'destroy']);
+    Route::put(
+    '/goals/{id}/saving',
+    [GoalController::class, 'addSaving']
+);
 });
