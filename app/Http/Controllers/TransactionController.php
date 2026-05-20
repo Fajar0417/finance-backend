@@ -48,11 +48,15 @@ class TransactionController extends Controller
 
         // UPDATE SALDO
         if ($request->type === 'income') {
+
             $wallet->balance += $request->amount;
-        } else {
+        } elseif (
+            $request->type === 'expense' ||
+            $request->type === 'saving'
+        ) {
+
             $wallet->balance -= $request->amount;
         }
-
         $wallet->save();
 
         return response()->json($transaction);
@@ -71,7 +75,7 @@ class TransactionController extends Controller
             )->findOrFail($id);
 
             $request->validate([
-                'type' => 'required|in:income,expense',
+                'type' => 'required|in:income,expense,saving',
                 'amount' => 'required|numeric|min:1',
                 'wallet_id' => 'required|exists:wallets,id',
             ]);
@@ -89,8 +93,13 @@ class TransactionController extends Controller
             // BALIKIN SALDO LAMA
             // =========================
             if ($oldType === 'income') {
+
                 $oldWallet->balance -= $oldAmount;
-            } else {
+            } elseif (
+                $oldType === 'expense' ||
+                $oldType === 'saving'
+            ) {
+
                 $oldWallet->balance += $oldAmount;
             }
 
@@ -139,8 +148,13 @@ class TransactionController extends Controller
 
         // BALIKIN SALDO
         if ($transaction->type === 'income') {
+
             $wallet->balance -= $transaction->amount;
-        } else {
+        } elseif (
+            $transaction->type === 'expense' ||
+            $transaction->type === 'saving'
+        ) {
+
             $wallet->balance += $transaction->amount;
         }
 

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Goal;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Wallet;
+use App\Models\Transaction;
 
 class GoalController extends Controller
 {
@@ -65,16 +67,101 @@ class GoalController extends Controller
         ]);
     }
 
-    public function addSaving(Request $request, $id)
+  public function addSaving(
+    Request $request,
+    $id
+)
 {
+    // ================= GOAL =================
     $goal = Goal::findOrFail($id);
 
-    $goal->current_amount += $request->amount;
+    // ================= WALLET =================
+    $wallet = Wallet::findOrFail(
+        $request->wallet_id
+    );
+
+    // ================= AMOUNT =================
+    $amount = (int) $request->amount;
+
+    // ================= VALIDATION =================
+    if ($amount <= 0) {
+        return response()->json([
+            'message' => 'Nominal tidak valid'
+        ], 400);
+    }
+
+    // ================= CEK SALDO =================
+    if ($wallet->balance < $amount) {
+        return response()->json([
+            'message' => 'Saldo tidak cukup'
+        ], 400);
+    }
+
+    // ================= UPDATE GOAL =================
+    $goal->current_amount += $amount;
+
+    // ================= STATUS =================
+    if (
+        $goal->current_amount >=
+        $goal->target_amount
+    ) {
+        $goal->status = 'completed';
+    }
 
     $goal->save();
 
-    return response()->json($goal);
-}
+    // ================= UPDATE WALLET =================
+    $wallet->balance -= $amount;
 
-    
+    $wallet->save();
+
+    // ================= CREATE TRANSACTION =================
+   Transaction::create([
+
+    'user_id' => Auth::id(),
+
+    'wallet_id' => $wallet->id,
+
+    'goal_id' => $goal->id,
+
+    'type' => 'saving',
+
+    'amount' => $amount,
+
+    'category' => 'Financial Goal',
+
+    'description' =>
+        $request->note
+            ? $request->note
+            : 'Nabung untuk ' .
+                $goal->goal_name,
+
+    'date' => now(),
+]);
+
+    // ================= RESPONSE =================
+    return response()->json([
+        'message' => 'Berhasil menabung',
+        'goal' => $goal,
+    ]);
+}
+public function history($id)
+{
+    $transactions = Transaction::with('wallet')
+        ->where('goal_id', $id)
+        ->where('type', 'saving')
+        ->latest()
+        ->get();
+
+    return response()->json(
+        $transactions
+    );
+}
+public function show($id)
+{
+    return Goal::with([
+        'transactions.wallet'
+    ])
+    ->findOrFail($id);
+}
 }

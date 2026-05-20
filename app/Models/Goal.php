@@ -19,4 +19,10 @@ class Goal extends Model
         'description',
         'product_link',
     ];
+    public function transactions()
+{
+    return $this->hasMany(
+        Transaction::class
+    );
+}
 }

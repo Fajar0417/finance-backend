@@ -42,7 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/transactions/{id}', [TransactionController::class, 'update']);
     Route::delete('/transactions/{id}', [TransactionController::class, 'destroy']);
 
-     Route::apiResource(
+    Route::apiResource(
         'budgets',
         BudgetController::class
     );
@@ -50,8 +50,16 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/goals', [GoalController::class, 'index']);
     Route::post('/goals', [GoalController::class, 'store']);
     Route::delete('/goals/{id}', [GoalController::class, 'destroy']);
-    Route::put(
-    '/goals/{id}/saving',
-    [GoalController::class, 'addSaving']
+    Route::post(
+        '/goals/{id}/saving',
+        [GoalController::class, 'addSaving']
+    );
+    Route::get(
+        '/goals/{id}/history',
+        [GoalController::class, 'history']
+    );
+    Route::get(
+    '/goals/{id}',
+    [GoalController::class, 'show']
 );
 });
